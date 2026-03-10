@@ -53,12 +53,11 @@ dependencies {
 }
 
 ext {
-    databaseName = System.getenv('POSTGRES_DB') ?: 'brawltracker'
-    databaseUsername = System.getenv('POSTGRES_USER') ?: 'postgres'
-    databasePassword = System.getenv('POSTGRES_PASSWORD') ?: ''
-    databaseOwnerUsername = databaseUsername
-    databaseOwnerPassword = databasePassword
-    // Lokales Entwicklungs-Setup nutzt den gemappten Port 3838
+    databaseName = 'brawltracker'
+    databaseUsername = 'postgres'
+    databasePassword = 'postgres'
+    databaseOwnerUsername = 'postgres'
+    databaseOwnerPassword = 'postgres'
     databaseUrl = "jdbc:postgresql://localhost:3838/${databaseName}"
     databaseApplRole = 'rl_brawltracker_app'
 }

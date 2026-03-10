@@ -1,4 +1,0 @@
-# Secrets – niemals committen
-.env
-.env.*
-!.env.example
