@@ -2,9 +2,9 @@ spring:
   application:
     name: "brawltracker"
   datasource:
-    url: "jdbc:postgresql://localhost:3838/brawltracker?currentSchema=brawltracker"
-    username: "postgres"
-    password: "postgres"
+    url: "${SPRING_DATASOURCE_URL}"
+    username: "${SPRING_DATASOURCE_USERNAME}"
+    password: "${SPRING_DATASOURCE_PASSWORD}"
     driver-class-name: "org.postgresql.Driver"
   flyway:
     url: "${spring.datasource.url}"
@@ -15,7 +15,7 @@ logging:
   level:
     root: "info"
 server:
-  port: 29678
+  port: "${SERVER_PORT:29678}"
 brawl:
   api:
-    key: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjY5YWQyOTk0LWYxNTctNGY1OC1hODU1LWJiNWI3Yjg1YjBkNSIsImlhdCI6MTc3MjY1NDY4OSwic3ViIjoiZGV2ZWxvcGVyL2VlYzBhZDFlLWE2YTgtMTY1ZC1mZTQ5LTVhYzFhYWJiNWU0YyIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTkzLjE5Mi4yMzUuMjQwIiwiMTQ1LjQwLjIxNC4yNTQiXSwidHlwZSI6ImNsaWVudCJ9XX0.D7Y2vXydlJdZszC0pIip1upuOLdiV3LaYCAQiA4eaHboN2BW8OIKlO43H2zAVs2gZVErz-0kcg4qA0VWhI7wxQ"
+    key: "${BRAWL_API_KEY}"
