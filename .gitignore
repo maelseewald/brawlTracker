@@ -1,0 +1,62 @@
+### Secrets / Environment ###
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+### macOS ###
+.DS_Store
+**/.DS_Store
+
+### Backend ###
+.gradle
+.gradle-user-home/
+build/
+log/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+
+### OpenAPI/Swagger ###
+backend/generated/
+
+### Frontend ###
+backend/src/main/resources/public/
+frontend/dist/
+
+### NPM ###
+node_modules/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Build Infrastructure ###
+local.properties
+
+### Docker ###
+# docker-compose.override.yml wird ignoriert falls vorhanden (lokale Overrides mit Secrets)
+docker-compose.override.yml
+# docker-compose.dev.yml wird NICHT ignoriert (enthält keine Secrets)

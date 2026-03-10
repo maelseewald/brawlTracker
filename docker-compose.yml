@@ -1,0 +1,101 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# BrawlTracker – Produktions-Stack
+#
+# Services:
+#   postgres  – PostgreSQL 17
+#   backend   – Spring Boot API (Port 29678, nur intern)
+#   frontend  – Vite-Build via nginx (Port 80, nur intern)
+#   nginx     – Reverse Proxy (Port 80/443 nach außen)
+#
+# Secrets werden ausschließlich aus der Root-.env-Datei geladen.
+# Datenbank-Zugangsdaten werden NICHT an frontend weitergegeben.
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:17
+    container_name: brawltracker-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    # Kein Port-Mapping nach außen – DB ist nur intern über "postgres:5432" erreichbar
+    networks:
+      - backend-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend (Spring Boot) ───────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: brawltracker-backend
+    restart: unless-stopped
+    environment:
+      # Datasource – interne Docker-Netzwerkadresse nutzen
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}?currentSchema=brawltracker
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      # Brawl Stars API – Key aus Root-.env
+      BRAWL_API_KEY: ${BRAWL_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend-net
+      - proxy-net
+    # Kein Port-Mapping nach außen – nur nginx hat Zugriff
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:29678/actuator/health || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ── Frontend (Vite → nginx) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: brawltracker-frontend
+    restart: unless-stopped
+    # Keine Secrets – Frontend kennt KEINE DB-Credentials
+    networks:
+      - proxy-net
+    # Kein Port-Mapping nach außen – nur nginx hat Zugriff
+
+  # ── Nginx Reverse Proxy ─────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: brawltracker-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # TLS: "443:443" auskommentieren und Zertifikate einbinden
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - proxy-net
+
+volumes:
+  postgres-data:
+
+networks:
+  # backend-net: Datenbank ↔ Backend (DB bleibt isoliert vom Frontend)
+  backend-net:
+    driver: bridge
+  # proxy-net: nginx ↔ Frontend & Backend
+  proxy-net:
+    driver: bridge
+

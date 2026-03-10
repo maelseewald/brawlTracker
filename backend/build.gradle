@@ -1,0 +1,124 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.flywaydb:flyway-database-postgresql:11.10.4'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.flywaydb.flyway' version '11.10.4'
+    id 'org.openapi.generator' version '7.14.0'
+}
+
+group = 'com.brawltracker'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.8'
+
+    implementation 'org.mapstruct:mapstruct:1.5.0.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.0.Final'
+}
+
+ext {
+    databaseName = System.getenv('POSTGRES_DB') ?: 'brawltracker'
+    databaseUsername = System.getenv('POSTGRES_USER') ?: 'postgres'
+    databasePassword = System.getenv('POSTGRES_PASSWORD') ?: ''
+    databaseOwnerUsername = databaseUsername
+    databaseOwnerPassword = databasePassword
+    // Lokales Entwicklungs-Setup nutzt den gemappten Port 3838
+    databaseUrl = "jdbc:postgresql://localhost:3838/${databaseName}"
+    databaseApplRole = 'rl_brawltracker_app'
+}
+
+flyway {
+    url = "${databaseUrl}"
+    user = "${databaseUsername}"
+    password = "${databasePassword}"
+    locations = ['/db/migration',
+                 '/db/setup',
+                 '/db/testdata']
+    schemas = ['brawltracker']
+    cleanDisabled = false
+    placeholders = ['db.name': "${databaseName}", 'db.role.application': "${databaseApplRole}"]
+}
+
+flywayInfo.dependsOn classes
+flywayMigrate.dependsOn classes
+
+def openApiOutput = project.layout.buildDirectory.dir("generated/openapi").get()
+
+compileJava.dependsOn tasks.named("openApiGenerate")
+openApiGenerate {
+    generatorName = 'spring'
+    inputSpec = "$projectDir/openapi.yaml".toString()
+    outputDir = openApiOutput.toString()
+    apiPackage = 'com.brawltracker.brawltracker.api'
+    modelPackage = 'com.brawltracker.brawltracker.api.model'
+    invokerPackage = 'com.brawltracker.brawltracker.api.invoker'
+    skipOverwrite = false
+    skipOperationExample = true
+    configOptions.set([
+            dateLibrary          : "java8",
+            useSpringBoot3       : "true",
+            interfaceOnly        : "true",
+            useBeanValidation    : "true",
+            performBeanValidation: "true",
+            skipDefaultInterface : "true",
+            requestMappingMode   : "api_interface",
+            useTags              : "true"
+    ])
+}
+
+sourceSets {
+    main {
+        java.srcDirs += openApiOutput.dir("src/main/java")
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+wrapper {
+    gradleVersion = '9.1.0'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}

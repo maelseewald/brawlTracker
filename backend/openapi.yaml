@@ -1,0 +1,155 @@
+openapi: 3.1.4
+info:
+  title: Impostor API
+  version: 1.0.0
+servers:
+  - url: /api/
+
+paths:
+  /player/{playerTag}:
+    get:
+      summary: Retrieve all data by Tag
+      description: Get all data by Tag
+      operationId: getDataByTag
+      tags:
+        - Player
+      parameters:
+        - $ref: '#/components/parameters/PlayerTagParameter'
+      responses:
+        '200':
+          description: Playerdata successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerDTO'
+        '404':
+          description: Player Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /playerlist/{playerTag}:
+    post:
+      summary: Add playerTag to playerList
+      operationId: addPlayerTag
+      tags:
+        - Playerlist
+      parameters:
+        - $ref: '#/components/parameters/PlayerTagParameter'
+      responses:
+        '200':
+          description: PlayerTag successfully added
+        '400':
+          description: Playertag is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  parameters:
+    PlayerTagParameter:
+      name: playerTag
+      required: true
+      in: path
+      schema:
+        type: string
+        description: The Tag of a Player
+
+  schemas:
+    PlayerDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        tag:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 100
+        trophies:
+          type: integer
+        highestTrophies:
+          type: integer
+        expLevel:
+          type: integer
+        expPoints:
+          type: integer
+        totalPrestigeLevel:
+          type: integer
+        soloVictories:
+          type: integer
+        duoVictories:
+          type: integer
+        threeVsThreeVictories:
+          type: integer
+        bestRoboRumbleTime:
+          type: integer
+        bestTimeAsBigBrawler:
+          type: integer
+        isQualifiedFromChampionshipChallenge:
+          type: boolean
+        clubTag:
+          type: string
+          maxLength: 20
+        clubName:
+          type: string
+          maxLength: 100
+        createdAt:
+          type: string
+          format: date-time
+
+    PlayerResponse:
+      type: object
+      properties:
+        tag:
+          type: string
+        name:
+          type: string
+        nameColor:
+          type: string
+        trophies:
+          type: integer
+        highestTrophies:
+          type: integer
+        expLevel:
+          type: integer
+        expPoints:
+          type: integer
+        totalPrestigeLevel:
+          type: integer
+        soloVictories:
+          type: integer
+        duoVictories:
+          type: integer
+        3vs3Victories:
+          type: integer
+        bestRoboRumbleTime:
+          type: integer
+        bestTimeAsBigBrawler:
+          type: integer
+        isQualifiedFromChampionshipChallenge:
+          type: boolean
+        club:
+          $ref: '#/components/schemas/Club'
+
+    Club:
+      type: object
+      properties:
+        tag:
+          type: string
+        name:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+

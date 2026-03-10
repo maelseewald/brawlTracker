@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+    /* Background scale */
+    --color-bg-base: #040b14;
+    --color-bg-surface: #071323;
+    --color-bg-card: #0a1a2e;
+    --color-bg-elevated: #0f2240;
+
+    /* Blue accent scale */
+    --color-blue-primary: #1d6fea;
+    --color-blue-bright: #3b8af5;
+    --color-blue-muted: #1a4f8a;
+    --color-blue-glow: rgba(29, 111, 234, 0.35);
+
+    /* Border */
+    --color-border-dim: rgba(59, 138, 245, 0.12);
+    --color-border-normal: rgba(59, 138, 245, 0.22);
+    --color-border-bright: rgba(59, 138, 245, 0.45);
+
+    /* Text */
+    --color-text-primary: #e8f0fe;
+    --color-text-secondary: #8baad4;
+    --color-text-muted: #4a6b94;
+
+    /* Chart colours */
+    --color-chart-solo: #1d6fea;
+    --color-chart-duo: #0ea5e9;
+    --color-chart-trio: #38bdf8;
+    --color-chart-accent: #6366f1;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #040b14;
+    color: #e8f0fe;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Recharts SVG focus fix — remove all focus outlines on chart elements */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper *:focus,
+.recharts-wrapper svg,
+.recharts-wrapper svg:focus,
+.recharts-surface,
+.recharts-surface:focus {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove white rectangle cursor background on bar charts */
+.recharts-rectangle.recharts-cursor {
+    display: none !important;
+}
+
+.recharts-bar-rectangle:focus {
+    outline: none !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(59, 138, 245, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 138, 245, 0.5);
+}
+
+/* Autofill fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #071323 inset !important;
+    -webkit-text-fill-color: #e8f0fe !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
