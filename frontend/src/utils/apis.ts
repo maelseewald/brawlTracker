@@ -1,4 +1,8 @@
-import { PlayerApi, PlayerlistApi } from '../../generated';
+import { Configuration, PlayerApi, PlayerlistApi } from '../../generated';
 
-export const playerApi = new PlayerApi();
-export const playerListApi = new PlayerlistApi();
+const config = new Configuration({
+  basePath: import.meta.env.VITE_API_BASE_URL,
+});
+
+export const playerApi = new PlayerApi(config);
+export const playerListApi = new PlayerlistApi(config);
