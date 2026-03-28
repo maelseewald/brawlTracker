@@ -1,17 +1,16 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '../');
+export default defineConfig(() => {
 
   return {
     envDir: '../',
     server: {
-      port: Number(env.VITE_PORT),
+      port: Number(8905),
       proxy: {
         '/api': {
-          target: env.VITE_BACKEND_URL,
+          target: 'http://129.212.194.222:29678/',
           changeOrigin: true,
         },
       },
