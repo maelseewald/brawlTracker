@@ -25,6 +25,8 @@ function StartPage() {
     setLoading(true);
     setError(null);
     setSubmitted(true);
+    console.log('Backend URL:', import.meta.env.VITE_BACKEND_URL);  // ← hier
+    console.log('All env:', import.meta.env);
     try {
       const response = await playerApi.getDataByTag({ playerTag });
       setPlayerData(response.data ?? []);
